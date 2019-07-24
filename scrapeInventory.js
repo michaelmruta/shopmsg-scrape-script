@@ -52,7 +52,7 @@ function writeToCSV(json) {
     }
 }
 
-function scrape(index, site, page = 1) {
+function scrape(page = 1) {
     console.log(flags.site + '/products.json?page='+page)
     var result = {}
     client.get('/products.json?page='+page, function(err, res, body) {
@@ -78,7 +78,7 @@ function scrape(index, site, page = 1) {
                 }
             }
             if(page < flags.page) {
-                scrape(index, site, ++page)
+                scrape(++page)
             }
         }
     })
