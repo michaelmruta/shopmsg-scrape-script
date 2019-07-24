@@ -1,0 +1,26 @@
+{
+  "requires": true,
+  "lockfileVersion": 1,
+  "dependencies": {
+    "args": "^5.0.1",
+    "json2csv": "^4.5.2",
+    "request-json": "^0.6.4"
+  },
+  "name": "shopmsg-scrape-script",
+  "version": "1.0.0",
+  "main": "scrapeInventory.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/michaelmruta/shopmsg-scrape-script.git"
+  },
+  "author": "Michael Angelo Ruta",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/michaelmruta/shopmsg-scrape-script/issues"
+  },
+  "homepage": "https://github.com/michaelmruta/shopmsg-scrape-script#readme",
+  "description": ""
+}
