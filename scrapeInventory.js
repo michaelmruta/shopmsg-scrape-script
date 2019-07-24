@@ -38,7 +38,7 @@ args.option('file', 'Outpuf filename', 'output.csv')
 
 const flags = args.parse(process.argv)
 const client = request.createClient(`https://${flags.site}`);
-const parser = new Parser({ header:false, fields: fields });
+const parser = new Parser({ header: false, fields: fields });
 
 fs.writeFileSync(flags.file, fields.join(",") + "\n");
 
@@ -52,37 +52,44 @@ function writeToCSV(json) {
     }
 }
 
-function scrape(page = 1) {
-    console.log(flags.site + '/products.json?page='+page)
-    var result = {}
-    client.get('/products.json?page='+page, function(err, res, body) {
-        if(err) {
+function getProductDetails(products) {
+        var product = products.shift();
+        if(product) {
+            console.log(flags.site + `/products/${product.handle}.json`)
+            client.get(`/products/${product.handle}.json`, function(err, res, body) {
+                if (err) {
+                    console.error(err);
+                    process.exit(0);
+                }
+                var product = body.product;
+                for (var j in product.variants) {
+                    writeToCSV({
+                        product_id: product.id,
+                        product_title: product.title,
+                        variant_id: product.variants[j].id,
+                        variant_title: product.variants[j].title,
+                        variant_price: product.variants[j].price,
+                        inventory_quantity: product.variants[j].inventory_quantity,
+                        captured_timestamp: new Date()
+                    })
+                }
+                getProductDetails(products)
+            });
+        }
+}
+
+function getProducts(page = 1) {
+    console.log(flags.site + '/products.json?page=' + page)
+    client.get('/products.json?page=' + page, function(err, res, body) {
+        if (err) {
             console.error(err);
             process.exit(0);
         }
-        var products = body.products;
-        if( products ) {
-            for (var i in products) {
-                result.product_id = products[i].id
-                result.product_title = products[i].title
-                if( products[i].variants ) {
-                    var variants = products[i].variants;
-                    for (var j = 0; j < variants.length; j++) {
-                        result.variant_id = variants[j].id
-                        result.variant_title = variants[j].title
-                        result.variant_price = variants[j].price
-                        result.inventory_quantity = variants[j].inventory_quantity
-                        result.captured_timestamp = new Date()
-                        writeToCSV(result)
-                    }
-                }
-            }
-            if(page < flags.page) {
-                scrape(++page)
-            }
+        getProductDetails(body.products)
+        if (page < flags.page) {
+            getProducts(++page)
         }
     })
-
 }
 
-scrape();
+getProducts();
